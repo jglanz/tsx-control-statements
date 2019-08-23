@@ -1,5 +1,5 @@
 const { FuseBox } = require('fuse-box');
-const statements = require('tsx-control-statements').default;
+const statements = require('@tsx-control-statements/transformer').default;
 
 const fuse = FuseBox.init({
 	homeDir: '.',

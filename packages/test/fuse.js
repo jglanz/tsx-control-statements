@@ -1,9 +1,9 @@
-const tsNodeOpts = require('../tsconfig.json');
+const tsNodeOpts = require('./tsconfig.json');
 
 require('ts-node').register(tsNodeOpts);
 
 const { FuseBox, QuantumPlugin } = require('fuse-box');
-const statements = require('../transformer.ts').default;
+const statements = require('@tsx-control-statements/transformer').default;
 const { readdirSync } = require('fs');
 
 for (const [homeDir, output] of [

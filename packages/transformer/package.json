@@ -1,0 +1,24 @@
+{
+  "name": "@tsx-control-statements/transformer",
+  "version": "2.16.0",
+  "author": "Konstantin Simeonov <kon.simeonov@protonmail.com>",
+  "homepage": "https://github.com/KonstantinSimeonov/tsx-control-statements#readme",
+  "license": "ISC",
+  "ts:main": "index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KonstantinSimeonov/tsx-control-statements.git"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "bugs": {
+    "url": "https://github.com/KonstantinSimeonov/tsx-control-statements/issues"
+  },
+  "devDependencies": {
+    "typescript": "3.5"
+  },
+  "peerDependencies": {
+    "typescript": ">=2.4.0"
+  }
+}

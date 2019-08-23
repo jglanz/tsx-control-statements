@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 
 const path = require('path');
-const statements = require('tsx-control-statements').default;
+const statements = require('@tsx-control-statements/transformer').default;
 
 module.exports = {
 	devtool: 'source-map',
