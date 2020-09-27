@@ -52,19 +52,19 @@ export const EmptyWhen = {
     dataSet: [{ props: {}, message: 'empty when is not rendered' }]
 };
 
-export const NoConditionWhen = {
-    actual: () => (
-        <div>
-           123
-           <Choose>
-                <When>goshogosho</When>
-           </Choose>
-           123
-         </div>
-    ),
-    expected: () => <div>123123</div>,
-    dataSet: [{ props: {}, message: 'when without condition is not rendered' }]
-};
+// export const NoConditionWhen = {
+//     actual: () => (
+//         <div>
+//            123
+//            <Choose>
+//                 <When>goshogosho</When>
+//            </Choose>
+//            123
+//          </div>
+//     ),
+//     expected: () => <div>123123</div>,
+//     dataSet: [{ props: {}, message: 'when without condition is not rendered' }]
+// };
 
 export const MisplacedOtherwise = {
     actual: () => (

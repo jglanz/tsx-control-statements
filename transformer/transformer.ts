@@ -40,7 +40,7 @@ const isRelevantJsxNode = (node: ts.Node): node is ts.JsxElement =>
     || ts.isJsxExpression(node)
     || ts.isJsxText(node) && node.getText() !== '';
 
-const getTagNameString = (node: ts.JsxElement): string => {
+const getTagNameString = (node: ts.Node): string => {
     if (ts.isJsxSelfClosingElement(node)) {
         return node.tagName.getFullText();
     }
@@ -74,8 +74,8 @@ const getJsxElementBody = (
     .getChildren()
     .filter(isRelevantJsxNode)
     .map(
-        node => ts.isJsxText(node)
-            ? ts.createLiteral(trim(node.getFullText()))
+        (node: ts.Node) => ts.isJsxText(node)
+            ? ts.factory.createLiteralTypeNode(trim(node.getFullText()) as any)
             : visitNodes(node, program, ctx)
     ).filter(Boolean) as ts.Expression[];
 
@@ -241,8 +241,8 @@ const transformWithNode: JsxTransformation = (node, program, ctx) => {
 
     return ts.createJsxExpression(
         undefined,
-        ts.createCall(
-            ts.createArrowFunction(
+        ts.factory.createCallExpression(
+            ts.factory.createArrowFunction(
                 undefined,
                 undefined,
                 iifeArgs,
@@ -256,7 +256,7 @@ const transformWithNode: JsxTransformation = (node, program, ctx) => {
     );
 };
 
-const STUB_PACKAGE_REGEXP = /("|')tsx-control-statements\/components(.ts)?("|')/;
+const STUB_PACKAGE_REGEXP = /("|')(jsx-control-statements|tsx-control-statements\/components)(\.ts)?("|')/;
 const getTransformation = (node: ts.Node): JsxTransformation => {
     const isStubsImport = ts.isImportDeclaration(node) && node.getChildren().some(
         child => STUB_PACKAGE_REGEXP.test(child.getFullText())

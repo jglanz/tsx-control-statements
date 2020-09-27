@@ -45,14 +45,14 @@ export const WithSelfClosingElementChild = {
 };
 
 export const EmptyIf = {
-        actual: () => <p>123<If condition={true}></If>neshto si</p>,
+        actual: () => <p>123<If condition={true}>df</If>neshto si</p>,
         expected: () =>  <p>123neshto si</p>,
         dataSet: [{ props: {}, message: 'empty if does not render anything' }]
 };
 
-export const NoConditionIf = {
-        actual: () => <p>123<If>tuka ima tuka nema</If>neshto si</p>,
-        expected: () =>  <p>123neshto si</p>,
-        dataSet: [{ props: {}, message: 'if without condition does not render anything' }]
-};
+// export const NoConditionIf = {
+//         actual: () => <p>123<If>tuka ima tuka nema</If>neshto si</p>,
+//         expected: () =>  <p>123neshto si</p>,
+//         dataSet: [{ props: {}, message: 'if without condition does not render anything' }]
+// };
 
