@@ -1,13 +1,13 @@
 {
-  "name": "tsx-control-statements",
-  "version": "0.0.1",
-  "author": "Konstantin Simeonov <kon.simeonov@protonmail.com>",
-  "license": "WTFPL",
+  "name": "@3fv/tsx-control-statements",
+  "version": "0.0.2",
+  "author": "Jonathan Glanz <support@3fv.ventures>",
+  "license": "MIT",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "init": "./scripts/init.fish",
-    "publish": "yarn build && npm login && npm publish",
+    "//publish": "yarn build && npm login && npm publish",
     "build": "./scripts/build.fish",
     "build:watch": "yarn build -- --watch",
     "test": "yarn test:compile && yarn test:run-compiled",
