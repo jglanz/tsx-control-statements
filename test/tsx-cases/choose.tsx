@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Choose, When, Otherwise } from 'tsx-control-statements/components';
+import { Choose, When, Otherwise } from '../../src'
 
 export default {
     actual: ({ str }: { str: string }) => (
@@ -39,7 +39,7 @@ export const EmptyChoose = {
 };
 
 export const EmptyWhen = {
-    actual: props => (
+    actual: (props:any) => (
         <div>
             123
             <Choose>

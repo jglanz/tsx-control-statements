@@ -1,6 +1,8 @@
 import * as React from 'react';
 
-import { Choose, When, Otherwise, For, If } from 'tsx-control-statements/components';
+import { Choose, When, Otherwise, For, If } from '../../src';
+
+declare var songName: string;
 
 export default {
     actual: ({ songList }: { songList: string[] }) => (

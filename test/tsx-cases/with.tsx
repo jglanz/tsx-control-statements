@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import { With } from 'tsx-control-statements/components';
+import { With } from '../../src';
 
 // this is unnecessary for compilation, but fools visuals studio code
-// declare var gosho: number, pesho: number, tosho: number;
+declare var gosho: number, pesho: number, tosho: number;
 
 export default {
     actual: () => (

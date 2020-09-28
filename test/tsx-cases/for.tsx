@@ -1,14 +1,16 @@
 import * as React from 'react';
 
-import { For, Choose, When, Otherwise, If } from 'tsx-control-statements/components';
+import { For, Choose, When, Otherwise, If } from '../../src';
+
 
 // this is unnecessary for compilation, but fools visuals studio code
+declare var chap: string, i: number, kvp: any
 // declare var i: number, chap: string;
 
 export const CanUseControlStatementsInBody = {
     actual: ({ words }: {words: string[]}) => (
         <div>
-            <For of={words} body={(w, i) => (
+            <For of={words} body={(w:string, i:number) => (
                   <Choose>
                     <When condition={i % 2 === 0}>
                         {w}
@@ -23,8 +25,8 @@ export const CanUseControlStatementsInBody = {
                 )} />
         </div>
     ),
-    expected: ({ words }) => <div>{words.map(
-        (w, i) => i % 2 === 0 ? w + (w.length <= 3 ? 'stuff' : '') : `${w} ${w}`)
+    expected: ({ words }:any) => <div>{words.map(
+        (w:string, i:number) => i % 2 === 0 ? w + (w.length <= 3 ? 'stuff' : '') : `${w} ${w}`)
     }</div>,
     dataSet: [
         {
@@ -36,7 +38,7 @@ export const CanUseControlStatementsInBody = {
 
 export const NoOf = {
     expected: () => null,
-    actual: () => <For each="test" of={null}>haha</For>,
+    actual: () => <For each="test" of={[]}>haha</For>,
     dataSet: [
         { props: {}, message: 'renders null' }
     ]
@@ -49,6 +51,8 @@ export const BadBodyProp = {
         { props: {}, message: 'uses for children when body is bad' }
     ]
 }
+
+
 
 export default {
     expected: ({ chaps }: { chaps: string[] }) => (
@@ -118,7 +122,7 @@ export const LoopBody = {
         {Array.from(xs, (x, i) => <>{x}<p>{x * i}</p></>)}
     </ol>,
     actual: ({ xs }: { xs: number[]; }) => <ol>
-        <For of={xs} body={(x, i) => <>{x}<p>{x * i}</p></>} />
+        <For of={xs} body={(x:number, i:number) => <>{x}<p>{x * i}</p></>} />
     </ol>,
     dataSet: [
         { props: { xs: [1, 5, 13] }, message: 'executes all iterations when provided with a function for body' },

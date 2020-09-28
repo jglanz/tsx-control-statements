@@ -1,0 +1,22 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"allowJs": true,
+		"jsx": "react",
+		"outDir": "../lib/test"
+	},
+	"paths": {
+		"tsc-control-statements/*": [
+			"../src/*"
+		],
+		"tsc-control-statements": [
+			"../src/index.ts"
+		]
+	},
+	"references": [
+		{
+			"path": "../src/tsconfig.json"
+		}
+	],
+	"files": []
+}

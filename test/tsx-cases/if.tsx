@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { If } from 'tsx-control-statements/components';
+import { If } from '../../src';
 
 export default {
     actual: ({ songList }: { songList: string[] }) => (
@@ -24,7 +24,7 @@ export default {
 }
 
 export const WithSelfClosingElementChild = {
-	actual: ({ n }) => (
+	actual: ({ n }:any) => (
 		<div>
 			some text
 			<If condition={n > 2}>
@@ -32,7 +32,7 @@ export const WithSelfClosingElementChild = {
 			</If>
 		</div>
 	),
-	expected: ({ n }) => (
+	expected: ({ n }:any) => (
 		<div>
 			some text
 				{n > 2 ? <img src="https://cukii.me/img/Ripples-larry.svg" /> : null}
