@@ -32,6 +32,8 @@
     "test:html-report": "nyc report --reporter=html"
   },
   "devDependencies": {
+    "jsx-control-statements": "https://github.com/3fv/jsx-control-statements.git",
+  
     "@types/node": "^10.12.12",
     "babel": "^6.23.0",
     "babel-cli": "^6.26.0",

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Choose, When, Otherwise} from "tsc-control-statements/components"
+import {Choose, When, Otherwise} from "jsx-control-statements"
 // export const ChooseNumbers = {
 //     component: ({ n }) => (
 //         <div>

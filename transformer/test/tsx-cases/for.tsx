@@ -1,12 +1,12 @@
 import * as React from 'react';
 
-import { For } from 'tsx-control-statements/components';
+import { For, Choose, When, Otherwise, If } from 'tsx-control-statements/components';
 
 // this is unnecessary for compilation, but fools visuals studio code
 // declare var i: number, chap: string;
 
 export const CanUseControlStatementsInBody = {
-    actual: ({ words }) => (
+    actual: ({ words }: {words: string[]}) => (
         <div>
             <For of={words} body={(w, i) => (
                   <Choose>
@@ -36,7 +36,7 @@ export const CanUseControlStatementsInBody = {
 
 export const NoOf = {
     expected: () => null,
-    actual: () => <For each="test">haha</For>,
+    actual: () => <For each="test" of={null}>haha</For>,
     dataSet: [
         { props: {}, message: 'renders null' }
     ]

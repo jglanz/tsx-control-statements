@@ -11,6 +11,9 @@ for (const [homeDir, output] of [
     ['./tsx-cases', `tsc/tsx-$name.js`]
 ]) {
     readdirSync(homeDir)
+      .filter(caseFile => ["choose","for","if"].some(type => caseFile.includes(type)) &&
+        [".jsx",".tsx"].some(ext => caseFile.endsWith(ext)))
+        //caseFile.endsWith(".jsx"))
         .forEach(caseFile => {
             const [bundle] = caseFile.split('.');
             const fuse = FuseBox.init({
