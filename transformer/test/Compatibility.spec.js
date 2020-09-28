@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const Babel = require('./babel/choose');
-const Tsc = require('./tsc/choose');
+// const Babel = require('./babel/choose');
+// const Tsc = require('./tsc/choose');
 const React = require('react');
 const enzyme = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');

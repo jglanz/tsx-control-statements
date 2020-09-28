@@ -9,3 +9,4 @@ coverage/
 *.swp
 package-lock.json
 *.patch
+/examples/fuse-box/index.js

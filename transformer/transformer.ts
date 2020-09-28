@@ -1,4 +1,11 @@
 import * as ts from 'typescript';
+import { EmitHint } from 'typescript';
+
+const printer = ts.createPrinter({
+    newLine: ts.NewLineKind.LineFeed,
+    removeComments: false,
+    omitTrailingSemicolon: true
+})
 
 export default function transformer(program: ts.Program): ts.TransformerFactory<ts.SourceFile> {
     return (context: ts.TransformationContext) => (file: ts.SourceFile) => visitNodes(file, program, context);
@@ -38,15 +45,15 @@ const isRelevantJsxNode = (node: ts.Node): node is ts.JsxElement =>
     ts.isJsxElement(node)
     || ts.isJsxSelfClosingElement(node)
     || ts.isJsxExpression(node)
-    || ts.isJsxText(node) && node.getText() !== '';
+    || ts.isJsxText(node) //&& node.getText() !== '';
 
 const getTagNameString = (node: ts.Node): string => {
     if (ts.isJsxSelfClosingElement(node)) {
-        return node.tagName.getFullText();
+        return node.tagName?.getFullText();
     }
 
     const maybeOpeningElement = node.getChildAt(0) as ts.JsxOpeningElement;
-    return maybeOpeningElement.tagName.getFullText();
+    return maybeOpeningElement?.tagName?.getFullText();
 };
 
 type PropMap = Readonly<ts.MapLike<ts.Expression>>;
@@ -75,7 +82,7 @@ const getJsxElementBody = (
     .filter(isRelevantJsxNode)
     .map(
         (node: ts.Node) => ts.isJsxText(node)
-            ? ts.factory.createLiteralTypeNode(trim(node.getFullText()) as any)
+            ? ts.factory.createLiteralTypeNode(trim(node.getFullText()) as any) as any
             : visitNodes(node, program, ctx)
     ).filter(Boolean) as ts.Expression[];
 
@@ -86,9 +93,11 @@ const nullJsxExpr = () => ts.createJsxExpression(undefined, ts.createNull());
 const createExpressionLiteral =
     (expressions: ts.Expression[]): ts.ArrayLiteralExpression | ts.Expression =>
         expressions.length === 1
-            ? ts.createJsxExpression(undefined, expressions[0])
-            : ts.createArrayLiteral(expressions);
-
+            ? (ts.isJsxExpression(expressions[0]) ? expressions[0] :
+          ts.factory.createJsxExpression(undefined, expressions[0]))
+            : ts.factory.createArrayLiteralExpression(expressions);
+//((ts.isLiteralTypeNode(expressions[0]) && typeof (expressions[0] as any).literal === "string") ?
+//           ts.factory.createJsxExpression(undefined, (expressions[0] as any).literal) :
 const transformIfNode: JsxTransformation = (node, program, ctx) => {
     const { condition } = getJsxProps(node);
     if (!condition) {
@@ -103,20 +112,22 @@ const transformIfNode: JsxTransformation = (node, program, ctx) => {
         return nullJsxExpr();
     }
 
-    return ts.createJsxExpression(
+    return ts.factory.createJsxExpression(
         undefined,
-        ts.createConditional(
+        ts.factory.createConditionalExpression(
             condition,
+            undefined,
             createExpressionLiteral(body),
-            ts.createNull()
+            undefined,
+            ts.factory.createNull()
         )
     )
 }
 
 const makeArrayFromCall = (args: ts.Expression[]): ts.JsxExpression =>
-    ts.createJsxExpression(
+    ts.factory.createJsxExpression(
         undefined,
-        ts.createCall(
+        ts.factory.createCallExpression(
             ts.createPropertyAccess(ts.createIdentifier('Array'), 'from'),
             undefined,
             args
@@ -147,7 +158,7 @@ const transformForNode: JsxTransformation = (node, program, ctx) => {
 
     const arrowFunctionArgs =
         [each, index].map(
-            arg => arg && ts.createParameter(
+            arg => arg && ts.factory.createParameterDeclaration(
                 undefined,
                 undefined,
                 undefined,
@@ -155,7 +166,7 @@ const transformForNode: JsxTransformation = (node, program, ctx) => {
             )
         ).filter(Boolean);
 
-    const arrowFunction = ts.createArrowFunction(
+    const arrowFunction = ts.factory.createArrowFunction(
         undefined,
         undefined,
         arrowFunctionArgs,
@@ -167,7 +178,7 @@ const transformForNode: JsxTransformation = (node, program, ctx) => {
     return makeArrayFromCall([of, arrowFunction]);
 };
 
-const transformChooseNode: JsxTransformation = (node, program, ctx) => {
+const transformChooseNode: JsxTransformation = (node: ts.Node, program: ts.Program, ctx: ts.TransformationContext) => {
     const elements = (node
         .getChildAt(1)
         .getChildren()
@@ -214,32 +225,76 @@ const transformChooseNode: JsxTransformation = (node, program, ctx) => {
     const [cases, defaultCase] = last && last.tagName === CTRL_NODE_NAMES.DEFAULT
         ? [elements.slice(0, elements.length - 1), last]
         : [elements, null];
+    
+    const checkWhenTrue = (whenTrue:ts.Node) => {
+        return typeof (whenTrue as any).expression?.literal === "string" ?
+          ts.factory.createStringLiteral((whenTrue as any).expression?.literal) :
+          whenTrue as ts.ArrayLiteralExpression | ts.Expression
+    }
+    
+    const filterBody = (nodeBody: ts.Node[]) => nodeBody
+      .filter(node => !(ts.isLiteralTypeNode(node) && typeof (node as any).literal === "string" && trim((node as any).literal).length === 0))
+      .map(node => (node as any)?.expression ?? node)as any
+    
+    
     const defaultCaseOrNull = defaultCase
-        ? createExpressionLiteral(defaultCase.nodeBody)
-        : ts.createNull();
+        ? checkWhenTrue(createExpressionLiteral(filterBody(defaultCase.nodeBody)))
+        : ts.factory.createNull();
 
-    return ts.createJsxExpression(
+    let caseIndex = cases.length
+    const newJsxExpression =  ts.createJsxExpression(
         undefined,
         cases.reduceRight(
-            (conditionalExpr, { condition, nodeBody }) => ts.createConditional(
-                condition,
-                createExpressionLiteral(nodeBody),
-                conditionalExpr
-            ),
+            (conditionalExpr, { condition, nodeBody }) => {
+                const conditionOut = printer.printNode(EmitHint.Unspecified, condition, node.getSourceFile())
+                console.warn(`Index: ${caseIndex}, Condition`, conditionOut)
+                nodeBody.forEach((elem, bodyIdx) => {
+                    const out = printer.printNode(EmitHint.Unspecified, elem, node.getSourceFile())
+                    console.warn(`Index: ${caseIndex}, Body Index: ${bodyIdx}`, out)
+                })
+                // const out =
+                //   printer.printList(ts.ListFormat.,, node.getSourceFile())
+                const
+                  whenTrue = createExpressionLiteral(filterBody(nodeBody)),
+                  currentConditionalOut = printer.printNode(EmitHint.Unspecified, conditionalExpr, node.getSourceFile())
+                console.warn(`Current conditional at index: ${caseIndex}`, currentConditionalOut)
+                caseIndex--
+                return ts.factory.createConditionalExpression(
+                  (condition as any)?.expression ?? condition,
+                  undefined,
+                  // (typeof (nodeBody[0] as any)?.literal === "string") ?
+                  //   ts.factory.createJsxText(nodeBody[0] as any) as any :
+                  checkWhenTrue(whenTrue),
+                  //createExpressionLiteral(nodeBody[0] as ts.JsxExpression),
+                  undefined,
+                  conditionalExpr
+                )
+            },
             defaultCaseOrNull
         )
     );
+    
+    // const sourceFile = ts.createSourceFile(
+    //   program.,
+    //   '',
+    //   ts.ScriptTarget.Latest,
+    //   /*setParentNodes*/ false,
+    //   ts.ScriptKind.TS
+    // )
+    const temp = printer.printNode(EmitHint.Unspecified, newJsxExpression, node.getSourceFile())
+    console.log("New CHOOSE", temp)
+    return newJsxExpression
 };
 
 const transformWithNode: JsxTransformation = (node, program, ctx) => {
     const props = getJsxProps(node);
     const iifeArgs = Object.keys(props).map(
-        key => ts.createParameter(undefined, undefined, undefined, key)
+        key => ts.factory.createParameterDeclaration(undefined, undefined, undefined, key)
     );
     const iifeArgValues = Object.values(props);
     const body = getJsxElementBody(node, program, ctx) as ts.Expression[];
 
-    return ts.createJsxExpression(
+    return ts.factory.createJsxExpression(
         undefined,
         ts.factory.createCallExpression(
             ts.factory.createArrowFunction(

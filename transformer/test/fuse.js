@@ -7,7 +7,7 @@ const statements = require('../transformer.ts').default;
 const { readdirSync } = require('fs');
 
 for (const [homeDir, output] of [
-    ['./compatibility-cases', 'tsc/$name.js'],
+    ['./compatibility-cases', 'babel/$name.js'],
     ['./tsx-cases', `tsc/tsx-$name.js`]
 ]) {
     readdirSync(homeDir)

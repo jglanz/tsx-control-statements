@@ -1,28 +1,28 @@
 import * as React from 'react';
-
-export const ChooseNumbers = {
-    component: ({ n }) => (
-        <div>
-            <Choose>
-                <When condition={n === 1}>
-                    <p>n is 1</p>
-                </When>
-                <When condition={n === 2}>
-                    <h3>n is 2</h3>
-                </When>
-                <When condition={n === 10}>
-                    <b>n is 10</b>
-                </When>
-            </Choose>
-        </div>
-    ),
-    dataSet: [
-        [1, 'renders first When'],
-        [2, 'renders second When'],
-        [10, 'renders third When'],
-        [42, 'does not render any When']
-    ].map(([n, message]) => ({ props: { n }, message }))
-};
+import {Choose, When, Otherwise} from "tsc-control-statements/components"
+// export const ChooseNumbers = {
+//     component: ({ n }) => (
+//         <div>
+//             <Choose>
+//                 <When condition={n === 1}>
+//                     <p>n is 1</p>
+//                 </When>
+//                 <When condition={n === 2}>
+//                     <h3>n is 2</h3>
+//                 </When>
+//                 <When condition={n === 10}>
+//                     <b>n is 10</b>
+//                 </When>
+//             </Choose>
+//         </div>
+//     ),
+//     dataSet: [
+//         [1, 'renders first When'],
+//         [2, 'renders second When'],
+//         [10, 'renders third When'],
+//         [42, 'does not render any When']
+//     ].map(([n, message]) => ({ props: { n }, message }))
+// };
 
 export const ChooseWithOtherwise = {
     component: ({ name }) => (

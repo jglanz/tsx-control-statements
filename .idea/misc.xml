@@ -29,9 +29,6 @@
     <option name="username" value="jon@mapper.ai" />
     <option name="jenkinsVersion" value="VERSION_2" />
   </component>
-  <component name="MacroExpansionManager">
-    <option name="directoryName" value="6ybr2f90" />
-  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="14" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
