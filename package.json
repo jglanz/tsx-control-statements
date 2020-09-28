@@ -1,6 +1,6 @@
 {
   "name": "@3fv/tsx-control-statements",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Jonathan Glanz <support@3fv.ventures>",
   "license": "MIT",
   "main": "index.js",
@@ -16,7 +16,7 @@
     "test:run-compiled": "mocha ../test/helpers/browser-env.js \\\"test/**/*.spec.js\\\"",
     "test:coverage": "nyc report --reporter=text-lcov | coveralls",
     "test:html-report": "nyc report --reporter=html",
-    "postversion": "./scripts/release.sh $npm_package_version && echo \"Successfully released version $npm_package_version!\"",
+    "postversion": "./scripts/release.fish $npm_package_version && echo \"Successfully released version $npm_package_version!\"",
     "release": "yarn build && yarn version --patch --non-interactive"
   },
   "devDependencies": {
