@@ -1,6 +1,6 @@
 {
   "name": "@3fv/tsx-control-statements",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Jonathan Glanz <support@3fv.ventures>",
   "license": "MIT",
   "main": "index.js",
@@ -46,15 +46,5 @@
   },
   "peerDependencies": {
     "typescript": ">=4.0.3"
-  },
-  "private": true,
-  "workspaces": {
-    "packages": [
-      "examples/*",
-      "transformer/"
-    ],
-    "nohoist": [
-      "**/@types/**"
-    ]
   }
 }
