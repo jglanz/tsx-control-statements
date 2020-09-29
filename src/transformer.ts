@@ -1,5 +1,7 @@
 import * as ts from "typescript"
 import { EmitHint } from "typescript"
+import { Option } from "@3fv/prelude-ts"
+import { isString } from "@3fv/guard"
 
 const isDev = process.env.NODE_ENV === "development"
 
@@ -83,18 +85,24 @@ const getJsxProps = (node: ts.JsxElement): PropMap => {
   
   return Object.assign({}, ...props)
 }
+const nullJsxExpr = () => ts.factory.createJsxExpression(undefined, ts.factory.createNull())
+
+const newStringLiteral = (str: any) => Option.ofNullable(trim(
+  str
+))
+  .filter(str => !!str && str.length > 0)
+  .map(str => ts.factory.createStringLiteral(str))
+  .getOrCall(() => nullJsxExpr() as any)
 
 const fixLiteralString = (node: ts.Node | ts.Node[]): any => {
   return typeof (
     node as any
   )?.literal === "string" ?
-    ts.factory.createStringLiteral((
-      node as any
-    ).literal) :
+    newStringLiteral((node as any).literal) :
     typeof (
       node as any
     ).expression?.literal === "string" ?
-      ts.factory.createStringLiteral((
+      newStringLiteral((
         node as any
       ).expression?.literal) :
       node as any
@@ -133,6 +141,7 @@ const sanitizeNodes = (nodeBody: ts.Node[]) => Array.isArray(nodeBody) ? nodeBod
     )) as any :
   nodeBody
 
+
 const getJsxElementBody = (
   node: ts.Node,
   program: ts.Program,
@@ -141,25 +150,24 @@ const getJsxElementBody = (
   .getChildren()
   .filter(isRelevantJsxNode)
   .map(
-    (node: ts.Node) => ts.isJsxText(node)
-      ? ts.factory.createLiteralTypeNode(trim(node.getFullText()) as any) as any
-      : visitNodes(node, program, ctx)
+    (node: ts.Node) =>
+      visitNodes(node, program, ctx)
   ).filter(Boolean) as ts.Expression[]
 
 // const trace = <T>(item: T, ...logArgs: any[]) => console.log(item, ...logArgs) || item;
 const trim = (from: string) => from.replace(/^\r?\n[\s\t]*/, "").replace(/\r?\n[\s\t]*$/, "")
-const nullJsxExpr = () => ts.createJsxExpression(undefined, ts.createNull())
+
 
 const createExpressionLiteral =
   (expressions: ts.Expression[]): ts.ArrayLiteralExpression | ts.Expression =>
-    expressions.length === 1
+    expressions?.length === 1
       ?
       (
         ts.isJsxExpression(expressions[0]) ? expressions[0] :
           ts.factory.createJsxExpression(undefined, expressions[0])
       )
       :
-      ts.factory.createArrayLiteralExpression(expressions)
+      ts.factory.createArrayLiteralExpression(expressions.filter((node:any) => !(isString(node.text) && trim(node.text).length === 0)))
 //((ts.isLiteralTypeNode(expressions[0]) && typeof (expressions[0] as any).literal === "string") ?
 //           ts.factory.createJsxExpression(undefined, (expressions[0] as any).literal) :
 
@@ -172,21 +180,41 @@ const transformIfNode: JsxTransformation = (node, program, ctx) => {
   
   const body = getJsxElementBody(node, program, ctx)
   
-  if (body.length === 0) {
+  if (body?.length === 0) {
     console.warn(`tsx-ctrl: empty ${ CTRL_NODE_NAMES.CONDITIONAL }`)
     return nullJsxExpr()
   }
   
-  return ts.factory.createJsxExpression(
+  const newJsxExpression = ts.factory.createJsxExpression(
     undefined,
     ts.factory.createConditionalExpression(
-      condition,
+      (
+        condition as any
+      )?.expression ?? condition,
       undefined,
-      fixLiteralString(createExpressionLiteral(sanitizeNodes(body))),
+      sanitizeNodes(fixLiteralString(createExpressionLiteral(sanitizeNodes(fixLiteralString((
+        body
+          .filter(node => !(node.kind === 286 && !(node as any).literal && !(node as any).expression))
+      ))))))
+      ,
+      //createExpressionLiteral(fixLiteralString(sanitizeNodes(fixLiteralString(body)))),
       undefined,
-      ts.factory.createNull()
+      nullJsxExpr()
     )
   )
+  
+  if (isDev) {
+    const expressionOut = printer.printNode(
+      EmitHint.Unspecified,
+      newJsxExpression,
+      node.getSourceFile()
+    )
+    console.log("New IF", expressionOut)
+    if (expressionOut.includes("(),")  || expressionOut.includes("[()")) {
+      debugger
+    }
+  }
+  return newJsxExpression
 }
 
 const makeArrayFromCall = (args: ts.Expression[]): ts.JsxExpression =>
@@ -215,8 +243,9 @@ const transformForNode: JsxTransformation = (node, program, ctx) => {
     }
   }
   
-  const body = sanitizeNodes(getJsxElementBody(node, program, ctx))
-  if (body.length === 0) {
+  const body = sanitizeNodes(fixLiteralString(getJsxElementBody(node, program, ctx)))
+  
+  if (body?.length === 0) {
     console.warn(`tsx-ctrl: Empty ${ CTRL_NODE_NAMES.FOREACH }`)
     return nullJsxExpr()
   }
@@ -237,7 +266,7 @@ const transformForNode: JsxTransformation = (node, program, ctx) => {
     arrowFunctionArgs,
     undefined, // type
     undefined,
-    createExpressionLiteral(sanitizeNodes(body))
+    createExpressionLiteral(sanitizeNodes(fixLiteralString(body)))
   )
   
   return makeArrayFromCall([of, arrowFunction])
@@ -269,7 +298,7 @@ const transformChooseNode: JsxTransformation = (
       return { condition, nodeBody, tagName }
     })
     .filter((node, index, array) => {
-      if (node.nodeBody.length === 0) {
+      if (node.nodeBody?.length === 0) {
         console.warn(`tsx-ctrl: Empty ${ CTRL_NODE_NAMES.CASE }`)
         return false
       }
@@ -279,7 +308,7 @@ const transformChooseNode: JsxTransformation = (
         return false
       }
       
-      if (node.tagName === CTRL_NODE_NAMES.DEFAULT && index !== array.length - 1) {
+      if (node.tagName === CTRL_NODE_NAMES.DEFAULT && index !== array?.length - 1) {
         console.log(`tsx-ctrl: ${ CTRL_NODE_NAMES.DEFAULT } must be the last node in a ${ CTRL_NODE_NAMES.SWITCH } element!`)
         return false
       }
@@ -287,26 +316,30 @@ const transformChooseNode: JsxTransformation = (
       return true
     })
   
-  if (elements.length === 0) {
+  if (elements?.length === 0) {
     console.warn(`tsx-ctrl: Empty ${ CTRL_NODE_NAMES.SWITCH }`)
     return nullJsxExpr()
   }
   
-  const last = elements[elements.length - 1]
+  const last = elements[elements?.length - 1]
   const [cases, defaultCase] = last && last.tagName === CTRL_NODE_NAMES.DEFAULT
-    ? [elements.slice(0, elements.length - 1), last]
+    ? [elements.slice(0, elements?.length - 1), last]
     : [elements, null]
   
   const defaultCaseOrNull = defaultCase
-    ? fixLiteralString(createExpressionLiteral(sanitizeNodes(defaultCase.nodeBody)))
-    : ts.factory.createNull()
+    ? fixLiteralString(createExpressionLiteral(sanitizeNodes(fixLiteralString(defaultCase.nodeBody))))
+    : nullJsxExpr() //ts.factory.createNull()
   
   // Only used when `isDev === true`
-  let caseIndex = cases.length
-  const newJsxExpression = ts.createJsxExpression(
+  let caseIndex = cases?.length
+  const newJsxExpression = ts.factory.createJsxExpression(
     undefined,
     cases.reduceRight(
-      (conditionalExpr, { condition, nodeBody }) => {
+      (conditionalExpr, { condition, nodeBody: providedNodeBody }) => {
+        const nodeBody = providedNodeBody
+          .filter(node => !(node.kind === 286 && !(node as any).literal && !(node as any).expression))
+          .map(node =>
+            fixLiteralString(sanitizeNodes(fixLiteralString(node))))
         
         if (isDev) {
           const conditionOut = printer.printNode(
@@ -326,7 +359,10 @@ const transformChooseNode: JsxTransformation = (
         }
         
         const
-          whenTrue = createExpressionLiteral(sanitizeNodes(nodeBody))
+          whenTrue = createExpressionLiteral(sanitizeNodes(fixLiteralString(
+            nodeBody
+              .filter(node => !(node.kind === 286 && !(node as any).literal && !(node as any).expression))
+          )))
         
         if (isDev) {
           const currentConditionalOut = printer.printNode(
@@ -339,20 +375,26 @@ const transformChooseNode: JsxTransformation = (
             currentConditionalOut
           )
           caseIndex--
+          
+          if (currentConditionalOut.includes("(),")) {
+            debugger
+          }
         }
         return ts.factory.createConditionalExpression(
           (
             condition as any
           )?.expression ?? condition,
           undefined,
-          fixLiteralString(sanitizeNodes((
+          Option.of(fixLiteralString(sanitizeNodes(fixLiteralString((
             whenTrue as any
-          )?.expression ?? whenTrue)),
+          )?.expression ?? whenTrue))))
+            .map((it:any) => Array.isArray(it) ? it.filter((node:any) => !(node.kind === 286 && !(node as any).literal && !(node as any).expression)) : it)
+            .get(),
           undefined,
           conditionalExpr
         )
       },
-      fixLiteralString(sanitizeNodes(defaultCaseOrNull?.expression ?? defaultCaseOrNull))
+      fixLiteralString(sanitizeNodes(fixLiteralString(defaultCaseOrNull?.expression ?? defaultCaseOrNull)))
     )
   )
   
@@ -362,7 +404,10 @@ const transformChooseNode: JsxTransformation = (
       newJsxExpression,
       node.getSourceFile()
     )
-    console.log("New expressionOut", expressionOut)
+    console.log("New CHOOSE", expressionOut)
+    if (expressionOut.includes("(),")) {
+      debugger
+    }
   }
   return newJsxExpression
 }
@@ -392,7 +437,7 @@ const transformWithNode: JsxTransformation = (node, program, ctx) => {
   )
 }
 
-const STUB_PACKAGE_REGEXP = /("|')(\.\.\/\.\.\/src|jsx-control-statements|tsx-control-statements\/components)(\.ts)?("|')/
+const STUB_PACKAGE_REGEXP = /("|')(@3fv\/)?(\.\.\/\.\.\/src|jsx-control-statements|tsx-control-statements\/components)(\.ts)?("|')/
 const getTransformation = (node: ts.Node): JsxTransformation => {
   const isStubsImport = ts.isImportDeclaration(node) && node.getChildren().some(
     child => STUB_PACKAGE_REGEXP.test(child.getFullText())
@@ -422,6 +467,10 @@ const getTransformation = (node: ts.Node): JsxTransformation => {
 }
 
 const statements: Transformation = (node, program, ctx) =>
-  (
-    getTransformation(node) as Transformation
-  )(node, program, ctx)
+  (getTransformation(node) as Transformation)(node, program, ctx)
+// Option.of((
+//   getTransformation(node) as Transformation
+// )(node, program, ctx))
+//   .map(newNode => !newNode ? undefined : !ts.isJsxExpression(newNode)  &&
+//   getValue(() => ts.isJsxExpression(((newNode as any).expression))) ? (newNode as any).expression : newNode)
+//   .get()

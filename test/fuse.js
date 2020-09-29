@@ -22,7 +22,7 @@ for (const [homeDir, output] of [
   readdirSync(homeDir)
     .filter(
       caseFile =>
-        ["with", "choose", "for", "if"].some(type => caseFile.includes(type)) &&
+        ["with", "choose","nested", "for", "if"].some(type => caseFile.includes(type)) &&
         [".jsx", ".tsx"].some(ext => caseFile.endsWith(ext))
     )
     .forEach(caseFile => {

@@ -14,7 +14,8 @@ export default {
                 <Otherwise>
                     <ul>
                         <For each="songName" of={songList}>
-                            <If condition={Boolean(songName)}>
+    
+                            <If condition={Boolean(songName)}> {songName} </If><If condition={Boolean(songName)}>
                                 <li key={songName}>{songName}</li>
                             </If>
                         </For>

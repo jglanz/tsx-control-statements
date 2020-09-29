@@ -10,4 +10,4 @@ echo "Building with args: $tscArgs"
 tsc -b src/tsconfig.json
 #tsc $tscArgs
 tsc -b tsconfig.json $argv  --preserveWatchOutput
-echo "$PWD/lib successfully built"
+echo "$PWD/lib/dist successfully built"

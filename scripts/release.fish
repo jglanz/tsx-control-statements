@@ -8,7 +8,7 @@ source $scriptDir/build.fish
 
 set NPM_VERSION $argv[1]
 
-if test -z "${NPM_VERSION}";then
+if test -z "$NPM_VERSION";then
   echo "package version must be provided"
   exit 255
 end
@@ -26,4 +26,4 @@ npm publish --tag latest
 cp package.json ../
 popd
 git push
-echo "Successfully released version ${NPM_VERSION}!"
+echo "Successfully released version $NPM_VERSION!"
