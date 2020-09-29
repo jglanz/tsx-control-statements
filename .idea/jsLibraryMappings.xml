@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="file://$PROJECT_DIR$" libraries="{Node.js Core, tsx-control-statements/node_modules}" />
-    <file url="PROJECT" libraries="{@types/node, @types/react, @types/react-dom, tsx-control-statements/node_modules}" />
+    <file url="file://$PROJECT_DIR$" libraries="{tsx-control-statements/node_modules}" />
+    <file url="file://$PROJECT_DIR$/test/examples/fuse-box" libraries="{tsx-control-statements/test/examples/fuse-box/node_modules}" />
+    <file url="file://$PROJECT_DIR$/test/examples/my-app" libraries="{tsx-control-statements/test/examples/my-app/node_modules}" />
+    <file url="file://$PROJECT_DIR$/test/examples/webpack" libraries="{tsx-control-statements/test/examples/webpack/node_modules}" />
+    <file url="PROJECT" libraries="{@types/node, @types/react, @types/react-dom, tsx-control-statements/node_modules, tsx-control-statements/test/examples/fuse-box/node_modules, tsx-control-statements/test/examples/my-app/node_modules, tsx-control-statements/test/examples/webpack/node_modules}" />
+    <includedPredefinedLibrary name="Node.js Core" />
   </component>
 </project>
