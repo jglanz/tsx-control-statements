@@ -3,20 +3,24 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"jsx": "react",
-		"outDir": "../lib/test"
+		"outDir": "../lib/test",
+		"paths": {
+			"tsx-control-statements/*": [
+				"../src/*"
+			],
+			"tsx-control-statements": [
+				"../src/index.ts"
+			]
+		}
 	},
-	"paths": {
-		"tsc-control-statements/*": [
-			"../src/*"
-		],
-		"tsc-control-statements": [
-			"../src/index.ts"
-		]
-	},
+
 	"references": [
 		{
 			"path": "../src/tsconfig.json"
 		}
 	],
-	"files": []
+	"include": [
+		"compatibility-cases/*.jsx",
+		"tsx-cases/*.tsx"
+	]
 }

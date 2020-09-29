@@ -1,14 +1,16 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { For, Choose, When, Otherwise } from 'tsx-control-statements/components';
+import { For, Choose, When, Otherwise } from '../../../src'
 
+
+declare var i:number, thingy: any
 export default class Example extends React.Component<{}, { things: string[] }> {
 	state = { things: ['this', 'is', 'DEMOOO!'] };
 
-	_onChange = event => this.setState({ things: event.target.value.split(' ').filter(Boolean) })
+	_onChange = (event:any) => this.setState({ things: event.target.value.split(' ').filter(Boolean) })
 
 	render() {
-		const { things } = this.state;
+		const { things } = this.state as any;
 		return (
 			<div>
 				<input type="text" onChange={this._onChange} />

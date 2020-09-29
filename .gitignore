@@ -11,3 +11,4 @@ package-lock.json
 *.patch
 /examples/fuse-box/index.js
 lib
+out

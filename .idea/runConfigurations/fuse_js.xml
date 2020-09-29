@@ -1,5 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="fuse.js" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/test/fuse.js" working-dir="$PROJECT_DIR$/test">
+  <configuration default="false" name="fuse.js" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="fuse.js" working-dir="$PROJECT_DIR$/test/">
+    <envs>
+      <env name="NODE_ENV" value="development" />
+    </envs>
     <method v="2" />
   </configuration>
 </component>

@@ -1,16 +1,11 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"allowJs": true,
-		"jsx": "react",
-		"outDir": "../lib/dist",
-		"baseUrl": "./"
-	},
-	"paths": {
-	
+		"outDir": "../lib/dist"
+
 	},
 	"include": [
-		"./**/*.ts",
-		"./**/*.tsx"
+		"*.ts",
+		"*.tsx"
 	]
 }

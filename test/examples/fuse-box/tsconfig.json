@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "target": "es6",
@@ -6,6 +7,24 @@
     "importHelpers": true,
     "isolatedModules": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
-  }
+    "experimentalDecorators": true,
+    "outDir": "../../../lib/test/examples/webpack",
+    "paths": {
+      "tsx-control-statements/*": [
+        "../../../src/*"
+      ],
+      "tsx-control-statements": [
+        "../../../src/index.ts"
+      ]
+    }
+  },
+  "references": [
+    {
+      "path": "../../tsconfig.json"
+    },
+    {
+      "path": "../../../src/tsconfig.json"
+    }
+  ],
+  "files": ["index.tsx"]
 }

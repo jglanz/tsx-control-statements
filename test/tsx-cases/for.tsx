@@ -37,7 +37,7 @@ export const CanUseControlStatementsInBody = {
 }
 
 export const NoOf = {
-    expected: () => null,
+    expected: ():any => null,
     actual: () => <For each="test" of={[]}>haha</For>,
     dataSet: [
         { props: {}, message: 'renders null' }

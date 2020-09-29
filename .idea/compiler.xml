@@ -8,7 +8,6 @@
   <component name="TypeScriptCompiler">
     <option name="enableServiceForProjectsWithoutConfig" value="false" />
     <option name="showAllErrors" value="true" />
-    <option name="typeScriptCompilerParams" value="--sourceMap true --jsx" />
     <option name="useConfig" value="true" />
   </component>
 </project>

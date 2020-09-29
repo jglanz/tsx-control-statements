@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "allowJs": false,
-    "alwaysStrict": true,
+    "alwaysStrict": false,
     "declaration": true,
     "target": "es6",
     "lib": [
+      "dom",
       "es6",
       "es2017",
       "es2017.object",
@@ -12,20 +13,25 @@
     ],
     "module": "commonjs",
     "noImplicitAny": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "downlevelIteration": true,
     "listEmittedFiles": true,
     "newLine": "LF",
     "removeComments": true,
     "skipLibCheck": true,
-    "strictNullChecks": true,
-    "strict": true,
+    "strictNullChecks": false,
+    "strict": false,
     "pretty": true,
+    "outDir": "lib",
     "baseUrl": "./",
     "jsx": "react",
     "composite": true
   },
+  
   "references": [
+    {
+      "path": "./test/examples/webpack/tsconfig.json"
+    },
     {
       "path": "./test/tsconfig.json"
     },
@@ -33,11 +39,5 @@
       "path": "./src/tsconfig.json"
     }
   ],
-  "files": [],
-  "exclude": [
-    "**/*.*",
-    "src",
-    "test",
-    "node_modules"
-  ]
+  "files": []
 }
