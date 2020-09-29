@@ -65,6 +65,9 @@ type TS<N, R = ts.Node> = (
 type Transformation = TS<ts.Node>
 type JsxTransformation = TS<ts.JsxElement>
 
+const resolveExpression = <T extends ts.Node = any>(parent: any, node: T) =>
+  ts.isJsxElement(parent) || ts.isJsxExpression(parent) ? node : (node as any).expression ?? node
+
 const isRelevantJsxNode = (node: ts.Node): node is ts.JsxElement =>
   ts.isJsxElement(node) ||
   ts.isJsxSelfClosingElement(node) ||
@@ -198,22 +201,14 @@ const transformIfNode: JsxTransformation = (node, program, ctx) => {
     console.warn(
       `tsx-ctrl: ${CTRL_NODE_NAMES.CONDITIONAL} missing condition props`
     )
-    return nullJsxExpr()
-    // Option.of(node.parent)
-    //   .filter(func => ts.isArrowFunction(func) || ts.isFunctionExpression(func))
-    //   .map(() => ts.factory.createNull())
-    //   .getOrCall(() => nullJsxExpr() as any)
+    return resolveExpression(node.parent,nullJsxExpr())
   }
 
   const body = getJsxElementBody(node, program, ctx)
 
   if (body?.length === 0) {
     console.warn(`tsx-ctrl: empty ${CTRL_NODE_NAMES.CONDITIONAL}`)
-    return nullJsxExpr()
-    // Option.of(node.parent)
-    //   .filter(func => ts.isVariableDeclaration(func) || ts.isVariableStatement(func) || ts.isArrowFunction(func) || ts.isFunctionExpression(func))
-    //   .map(() => ts.factory.createNull())
-    //   .getOrCall(() => nullJsxExpr() as any)
+    return resolveExpression(node.parent,nullJsxExpr())
   }
 
   const newJsxExpression = ts.factory.createJsxExpression(
@@ -224,7 +219,7 @@ const transformIfNode: JsxTransformation = (node, program, ctx) => {
       undefined,
       fixLiteralString(createExpressionLiteral(body)),
       undefined,
-      nullJsxExpr()
+      ctx.factory.createNull()
     )
   )
 
@@ -239,11 +234,12 @@ const transformIfNode: JsxTransformation = (node, program, ctx) => {
       debugger
     }
   }
-  return Option.of(node.parent)
-    .filter(func => ts.isVariableDeclaration(func) || ts.isVariableStatement(func) || ts.isArrowFunction(func) || ts.isFunctionExpression(func))
-    .map(() => newJsxExpression)
-    // .map(() => newJsxExpression?.expression)
-    .getOrElse(newJsxExpression)
+  return resolveExpression(node.parent, newJsxExpression)
+  // Option.of(node.parent)
+  //   .filter(func => ts.isVariableDeclaration(func) || ts.isVariableStatement(func) || ts.isArrowFunction(func) || ts.isFunctionExpression(func))
+  //   .map(() => newJsxExpression)
+  //   // .map(() => newJsxExpression?.expression)
+  //   .getOrElse(newJsxExpression)
 }
 
 const makeArrayFromCall = (args: ts.Expression[]): ts.JsxExpression =>

@@ -1,12 +1,12 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"allowJs": true,
+		"allowJs": false,
 		"jsx": "react",
 		"outDir": "../lib/test",
 		"paths": {
-			"tsx-control-statements/*": [
-				"../src/*"
+			"tsx-control-statements/transformer": [
+				"../src/transformer.ts"
 			],
 			"tsx-control-statements": [
 				"../src/index.ts"
@@ -20,7 +20,8 @@
 		}
 	],
 	"include": [
-		"compatibility-cases/*.jsx",
-		"tsx-cases/*.tsx"
+		"--compatibility-cases/*.jsx",
+		"tsx-cases/*.tsx",
+		"__fixtures__/*.tsx"
 	]
 }
