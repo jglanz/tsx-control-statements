@@ -45,8 +45,9 @@
     "typescript": "4.1.0-beta"
   },
   "dependencies": {
+    "@3fv/guard": "^1.4.16",
     "@3fv/prelude-ts": "^0.8.19",
-    "@3fv/guard": "^1.4.16"
+    "ts-pattern": "^1.1.0"
   },
   "peerDependencies": {
     "typescript": ">=4.0.3"
