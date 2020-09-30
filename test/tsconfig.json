@@ -22,6 +22,7 @@
 	"include": [
 		"--compatibility-cases/*.jsx",
 		"tsx-cases/*.tsx",
+		"playground.ts",
 		"__fixtures__/*.tsx"
 	]
 }
