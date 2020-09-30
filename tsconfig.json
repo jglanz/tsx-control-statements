@@ -6,10 +6,14 @@
     "target": "es6",
     "lib": [
       "dom",
-      "es6",
-      "es2017",
-      "es2017.object",
-      "es2016"
+      "ES7",
+      "ES6",
+      "ESNext",
+      "ES2020",
+      "ES2019",
+      "ES2018",
+      "ES2017",
+      "ES2016"
     ],
     "module": "commonjs",
     "noImplicitAny": false,

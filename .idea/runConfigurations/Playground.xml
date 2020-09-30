@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="fuse.js" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="fuse.js" working-dir="$PROJECT_DIR$/test/">
+  <configuration default="false" name="Playground" type="NodeJSConfigurationType" path-to-node="$PROJECT_DIR$/node_modules/.bin/ts-node" path-to-js-file="test/playground.ts" working-dir="$PROJECT_DIR$">
     <envs>
       <env name="NODE_ENV" value="development" />
       <env name="TSX_CONTROL_DEBUG" value="1" />

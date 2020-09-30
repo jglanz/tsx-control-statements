@@ -12,3 +12,4 @@ package-lock.json
 /examples/fuse-box/index.js
 lib
 out
+/test.log
