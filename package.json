@@ -1,6 +1,6 @@
 {
   "name": "@3fv/tsx-control-statements",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "Jonathan Glanz <support@3fv.ventures>",
   "license": "MIT",
   "main": "index.js",
