@@ -13,3 +13,5 @@ package-lock.json
 lib
 out
 /test.log
+*.spec.js.map
+*.spec.js
