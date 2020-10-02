@@ -34,9 +34,6 @@
   
   "references": [
     {
-      "path": "./test/examples/webpack/tsconfig.json"
-    },
-    {
       "path": "./test/tsconfig.json"
     },
     {
