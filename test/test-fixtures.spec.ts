@@ -1,7 +1,6 @@
 import "jest"
 import Compiler from "ts-transform-test-compiler"
 import * as Path from "path"
-import * as Fs from "fs"
 import { mkdir, ls, echo } from "shelljs"
 import { JsxEmit } from "typescript"
 
