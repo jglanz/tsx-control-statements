@@ -11,8 +11,11 @@ const tsxControlStatements = require("../src/transformer").default,
 
 mkdir("-p", outFixturesDir)
 
+
 const files = ls("test/__fixtures__/*.tsx")
-files.forEach(file => {
+files
+  //.filter(it => it.includes("choose"))
+  .forEach(file => {
   const basename = file.split("/").pop(),
     name = basename.split(".").slice(0, -1).join(".")
   

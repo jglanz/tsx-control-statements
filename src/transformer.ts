@@ -1,5 +1,5 @@
 import * as ts from "typescript"
-import { EmitHint } from "typescript"
+import { EmitHint, isJsxExpression } from "typescript"
 import { Option } from "@3fv/prelude-ts"
 import { match, when } from "ts-pattern"
 
@@ -15,7 +15,8 @@ const log = Option.tryNullable(() => {
         Fs.appendFile("./test.log", data.rawoutput + "\n", err => {
           if (err) throw err
         })
-      }
+      },
+      // console.log
     ]
   })
 }).getOrElse(console)
@@ -406,29 +407,29 @@ const transformChooseNode: JsxTransformation = (
 
       return { condition, nodeBody, tagName }
     })
-    .filter((node, index, array) => {
-      if (node.nodeBody?.length === 0) {
-        log.warn(`tsx-ctrl: Empty ${CTRL_NODE_NAMES.CASE}`)
+    .filter((container, index, array) => {
+      if (container.nodeBody?.length === 0) {
+        console.warn(`tsx-ctrl: Empty ${CTRL_NODE_NAMES.CASE} in ${node.getSourceFile().fileName}`)
         return false
       }
-
-      if (!node.condition && node.tagName !== CTRL_NODE_NAMES.DEFAULT) {
-        log.warn(
-          `tsx-ctrl: ${CTRL_NODE_NAMES.CASE} without condition will be skipped`
+    
+      if (!container.condition && container.tagName !== CTRL_NODE_NAMES.DEFAULT) {
+        console.warn(
+          `tsx-ctrl: ${CTRL_NODE_NAMES.CASE} without condition will be skipped in ${node.getSourceFile().fileName}`
         )
         return false
       }
-
+    
       if (
-        node.tagName === CTRL_NODE_NAMES.DEFAULT &&
+        container.tagName === CTRL_NODE_NAMES.DEFAULT &&
         index !== array?.length - 1
       ) {
-        log.info(
+        console.log(
           `tsx-ctrl: ${CTRL_NODE_NAMES.DEFAULT} must be the last node in a ${CTRL_NODE_NAMES.SWITCH} element!`
         )
         return false
       }
-
+    
       return true
     })
 
@@ -485,13 +486,13 @@ const transformChooseNode: JsxTransformation = (
         }
 
         const whenTrue = createExpressionLiteral(
-          sanitizeNodes(
-            fixLiteralString(
+          //sanitizeNodes(
+            //fixLiteralString(
               nodeBody
 
               //      .filter((node:any) => !(node.kind === 286 && !(node as any).text && !(node as any).literal && !(node as any).expression))
-            )
-          )
+            //)
+          //)
         )
 
         if (isDev) {
@@ -513,12 +514,16 @@ const transformChooseNode: JsxTransformation = (
         return F.createConditionalExpression(
           (condition as any)?.expression ?? condition,
           undefined,
-          Option.of((whenTrue as any)?.expression ?? whenTrue)
-            // .map((it:any) =>
-            //   Array.isArray(it?.elements) ?
-            //     Object.assign(it, {elements:it.elements.filter(filterEmptyStrings)}) :
-            //   Array.isArray(it) ? it.filter(filterEmptyStrings) : it)
-            .get(),
+          (isJsxExpression(whenTrue) ?
+            whenTrue.getChildAt(1) :
+            whenTrue) as any,
+            
+          // Option.of((whenTrue as any)?.expression ?? whenTrue)
+          //   // .map((it:any) =>
+          //   //   Array.isArray(it?.elements) ?
+          //   //     Object.assign(it, {elements:it.elements.filter(filterEmptyStrings)}) :
+          //   //   Array.isArray(it) ? it.filter(filterEmptyStrings) : it)
+          //   .get(),
           undefined,
           conditionalExpr
         )
