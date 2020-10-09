@@ -13,11 +13,6 @@
     "build:watch": "yarn build -- --watch",
     "test": "yarn test:compile && jest",
     "test:watch": "jest --watch",
-    "test:ci": "./runtests.sh",
-    "test:compile": "cd ../test && ./compile-cases.sh && cd ..",
-    "//test:run-compiled": "mocha ../test/helpers/browser-env.js \\\"test/**/*.spec.js\\\"",
-    "test:coverage": "nyc report --reporter=text-lcov | coveralls",
-    "test:html-report": "nyc report --reporter=html",
     "postversion": "./scripts/release.fish $npm_package_version && echo \"Successfully released version $npm_package_version!\"",
     "release": "yarn build && yarn version --patch --non-interactive"
   },
